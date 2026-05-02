@@ -1,17 +1,52 @@
+'use client';
+
+import { useState, useEffect } from "react";
+
+import { VideoPlayer } from "./components/VideoPlayer";
+import { VideoCard } from "./components/VideoCard";
+import { Video } from "@/types";
+
 export default function Home() {
-  return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="text-center">
-        <h1 className="text-6xl font-semibold tracking-tighter mb-4">
-          VideoFlow
-        </h1>
-        <p className="text-xl text-zinc-400 mb-8">
-          Your video catalog is loading...
-        </p>
-        <div className="text-sm text-zinc-500">
-          We&apos;ll build the player + catalog here
-        </div>
-      </div>
+  const [videos, setVideos] = useState<Video[]>([]);
+  const [currentVideo, setCurrentVideo] = useState<Video | null>(null);
+  const [search, setSearch] = useState("");
+  const [sort, setSort] = useState<'newest' | 'popular' | 'longest'>('newest');
+  const [loading, setLoading] = useState(true);
+
+  const fetchVideos = async () => {
+    try {
+      const res = await fetch('/api/videos');
+      const data = await res.json();
+      setVideos(data);
+    if (data.length > 0) {
+      setCurrentVideo(data[0]);
+    }
+    } catch (error) {
+      console.error('Failed to fetch videos', error);
+    } finally {
+      setLoading(false);
+    }
+  }
+  useEffect(() => {
+    fetchVideos();
+  }, []);
+
+  return (<div className="min-h-screen bg-zinc-900 text-white p-4" data-page="home">
+    <div className="max-w-5xl mx-auto" data-part="player">
+      <VideoPlayer video={currentVideo} />
     </div>
-  );
+    <div className="max-w-5xl mx-auto mt-12" data-region="cards">
+      {loading ? 
+      <div className="text-center text-zinc-500">Loading...</div> 
+      : videos.length === 0 ? (
+        <div className="text-center text-zinc-500">No videos found.</div>
+      ) : (
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {videos.map(video => (
+            <VideoCard key={video.id} video={video} onPlay={setCurrentVideo} />
+          ))}
+        </div>
+      )}
+    </div>
+  </div>);
 }
