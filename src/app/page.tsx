@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { VideoPlayer } from "./components/VideoPlayer";
 import { VideoCard } from "./components/VideoCard";
 import { Video } from "@/types";
+import { trackPlay } from "./utils";
 
 export default function Home() {
   const [videos, setVideos] = useState<Video[]>([]);
@@ -27,6 +28,12 @@ export default function Home() {
       setLoading(false);
     }
   }
+
+  const handlePlay = (video: Video) => {
+    setCurrentVideo(video);
+    trackPlay(video.id);
+  }
+
   useEffect(() => {
     fetchVideos();
   }, []);
@@ -43,7 +50,7 @@ export default function Home() {
       ) : (
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {videos.map(video => (
-            <VideoCard key={video.id} video={video} onPlay={setCurrentVideo} />
+            <VideoCard key={video.id} video={video} onPlay={handlePlay} />
           ))}
         </div>
       )}

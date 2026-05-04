@@ -26,7 +26,6 @@ export function VideoPlayer({ video }: VideoPlayerProps) {
           key={video.id}
           src={video.video_url}
           controls
-          autoPlay
           className="w-full h-full object-contain"
           poster={video.thumbnail_url || undefined}
         />

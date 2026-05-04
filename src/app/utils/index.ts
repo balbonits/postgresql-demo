@@ -32,3 +32,18 @@ export function formatDate(dateString: string): string {
     year: 'numeric',
   });
 }
+
+/**
+ * Tracks a video play event (for analytics)
+ */
+export async function trackPlay(videoId: number) {
+  try {
+    await fetch('/api/plays', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ video_id: videoId }),
+    });
+  } catch (error) {
+    console.error('Failed to track play', error);
+  }
+}
